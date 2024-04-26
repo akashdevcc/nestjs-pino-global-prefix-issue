@@ -20,7 +20,7 @@ import { AppService } from './app.service';
               ? {
                   target: 'pino-pretty',
                   options: {
-                    singleLine: false,
+                    singleLine: true,
                   },
                 }
               : undefined,

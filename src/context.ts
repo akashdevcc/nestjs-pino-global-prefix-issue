@@ -1,6 +1,6 @@
-import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import { CreateExpressContextOptions } from '@trpc/server/adapters/express';
 
-export function createContext({ req, res }: CreateFastifyContextOptions) {
+export function createContext({ req, res }: CreateExpressContextOptions) {
   const user = { name: req.headers.username ?? 'anonymous' };
 
   return { req, res, user };
