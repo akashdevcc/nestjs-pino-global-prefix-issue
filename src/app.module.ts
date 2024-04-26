@@ -16,6 +16,7 @@ import { AppService } from './app.service';
           pinoHttp: {
             level: level,
             genReqId: function (req, res) {
+              console.log('xxxxxxxxxxxxx DOES NOT GET EXECUTED xxxxxxxxxxxxx');
               const existingID = req.id ?? req.headers['x-request-id'];
               if (existingID) return existingID;
               const id = randomUUID();
