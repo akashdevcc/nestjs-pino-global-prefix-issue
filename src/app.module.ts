@@ -1,7 +1,8 @@
-import { randomUUID } from 'crypto';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
+
 import { AppController } from './app.controller';
+import { AppRouterFactory } from './app.router';
 import { AppService } from './app.service';
 
 @Module({
@@ -15,14 +16,6 @@ import { AppService } from './app.service';
         return {
           pinoHttp: {
             level: level,
-            genReqId: function (req, res) {
-              console.log('xxxxxxxxxxxxx DOES NOT GET EXECUTED xxxxxxxxxxxxx');
-              const existingID = req.id ?? req.headers['x-request-id'];
-              if (existingID) return existingID;
-              const id = randomUUID();
-              res.setHeader('X-Request-Id', id);
-              return id;
-            },
             transport: isPretty
               ? {
                   target: 'pino-pretty',
@@ -37,6 +30,7 @@ import { AppService } from './app.service';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppRouterFactory, AppService],
+  exports: [AppRouterFactory],
 })
 export class AppModule {}
