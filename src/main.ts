@@ -9,7 +9,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    new FastifyAdapter({
+      requestIdHeader: 'traceparent',
+    }),
     { bufferLogs: true },
   );
   app.useLogger(app.get(Logger));
