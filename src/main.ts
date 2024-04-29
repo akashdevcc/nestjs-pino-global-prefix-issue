@@ -4,16 +4,33 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
+import Fastify from 'fastify';
 import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { createContext } from './context';
 import { AppRouterFactory } from './app.router';
+import { Store, storage } from './app.storage';
 
 async function bootstrap() {
+  const fastify = Fastify();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  fastify.addHook('onRequest', (_request, _reply, done) => {
+    console.log('in onRequest hook');
+    storage.run(new Store(7), () => {
+      const store = storage.getStore();
+      console.log('store = ', store);
+
+      done();
+    });
+  });
+
+  const fastifyAdapter = new FastifyAdapter(fastify);
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    fastifyAdapter,
     { bufferLogs: true },
   );
 
