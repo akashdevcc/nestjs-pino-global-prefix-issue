@@ -1,6 +1,17 @@
 # nestjs-pino-trpc-req-log-issue
 
+**THE ISSUE IS RESOLVED (for express only)!**
+
 See issue: https://github.com/iamolegga/nestjs-pino/issues/1926
+
+**The problem:**
+Because "trpc express middleware" is registered as global middleware and `LoggerModule` is imported inside `AppModule`, the `LoggerMiddleware` code which stores `pino.Logger` into ALS, was not getting triggered. Hence, the logs were not logging request information.
+
+**The solution:**
+As "NestJS Middlewares" are just express middlewares underneath, the "trpc express middleware" is reimplemented as "NestJS Middleware" [here](https://github.com/akashdevcc/nestjs-pino-trpc-req-log-issue/blob/feature/express-trpc-req-log-issue-resolved/src/trpc.middleware.ts). `TrpcModule` is defined and imported in `AppModule` after `LoggerModule` so that `LoggerMiddleware` gets executed before `TrpcMiddleware` in request lifecycle. After applying this solution, the following issue has been resolved.
+
+**What about Fastify:**
+As Express and fastify handle middleware differently and provide different method signatures, the same solution cannot be applied for Fastify. The `fastifyTRPCPlugin` uses `FastifyRequest` and `FastifyReply` objects whereas "NestJS Middleware for Fastify" provides only `FastifyRequest['raw']` and `FastifyReply['raw']`. Thus, for Fastify, another approach will be required, probably, storing the `pino.Logger` into ALS explicitly during `onRequest` hook of "Fastify Request Lifecycle" using Fastify Hooks and preventing the storage of `pino.Logger` into ALS inside `nestjs-pino` code.
 
 **Steps to reproduce:**
 1. Clone the repo.
