@@ -25,7 +25,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@trpc/server": "^10.45.2",
     "express": "4.19.2",
-    "nestjs-pino": "^4.0.0",
+    "nestjs-pino": "4.0.0",
     "pino-http": "^9.0.0",
     "pino-pretty": "^11.0.0",
     "reflect-metadata": "^0.1.13",
@@ -71,5 +71,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "overrides": {
+      "nestjs-pino": "file:../nestjs-pino/dist"
+    }
   }
 }

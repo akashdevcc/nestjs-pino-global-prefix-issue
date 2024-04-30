@@ -1,6 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import { Logger } from 'nestjs-pino';
+import {
+  Logger,
+  PARAMS_PROVIDER_TOKEN,
+  createLoggerMiddlewares,
+} from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { createContext } from './context';
@@ -12,6 +16,10 @@ async function bootstrap() {
   const appRouterFactory = app.get(AppRouterFactory);
   const appRouter = appRouterFactory.create();
 
+  app.use(createLoggerMiddlewares(app.get(PARAMS_PROVIDER_TOKEN)['pinoHttp']));
+  const logger = app.get(Logger);
+  app.useLogger(logger);
+
   app.use(
     '/api/trpc',
     trpcExpress.createExpressMiddleware({
@@ -20,7 +28,6 @@ async function bootstrap() {
     }),
   );
 
-  app.useLogger(app.get(Logger));
   await app.listen(3000);
 }
 bootstrap();

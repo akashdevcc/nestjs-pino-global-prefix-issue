@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  nestjs-pino: file:../nestjs-pino/dist
+
 dependencies:
   '@nestjs/common':
     specifier: ^10.0.0
@@ -21,8 +24,8 @@ dependencies:
     specifier: 4.19.2
     version: 4.19.2
   nestjs-pino:
-    specifier: ^4.0.0
-    version: 4.0.0(@nestjs/common@10.3.8)(pino-http@9.0.0)
+    specifier: file:/home/akash/development/akashdevcc/examples/nestjs-pino/dist
+    version: file:../nestjs-pino/dist
   pino-http:
     specifier: ^9.0.0
     version: 9.0.0
@@ -3994,18 +3997,6 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
-  /nestjs-pino@4.0.0(@nestjs/common@10.3.8)(pino-http@9.0.0):
-    resolution: {integrity: sha512-XhCg/R+l3w0BFP6MHyR6lU/BHVEV0tV9z24G0vuA9FD3sv+TQNvnO9uVsF1l/oVspgGfQ9Qulmb2UbsfYlI0+g==}
-    engines: {node: '>= 14'}
-    requiresBuild: true
-    peerDependencies:
-      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
-      pino-http: ^6.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
-    dependencies:
-      '@nestjs/common': 10.3.8(reflect-metadata@0.1.14)(rxjs@7.8.1)
-      pino-http: 9.0.0
-    dev: false
-
   /node-abort-controller@3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
     dev: true
@@ -5435,4 +5426,9 @@ packages:
 
   /zod@3.23.4:
     resolution: {integrity: sha512-/AtWOKbBgjzEYYQRNfoGKHObgfAZag6qUJX1VbHo2PRBgS+wfWagEY2mizjfyAPcGesrJOcx/wcl0L9WnVrHFw==}
+    dev: false
+
+  file:../nestjs-pino/dist:
+    resolution: {directory: ../nestjs-pino/dist, type: directory}
+    name: dist
     dev: false

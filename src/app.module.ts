@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
@@ -16,6 +17,14 @@ import { AppService } from './app.service';
         return {
           pinoHttp: {
             level: level,
+            autoLogging: false,
+            genReqId: function (req, res) {
+              const existingID = req.id ?? req.headers['request-id'];
+              if (existingID) return existingID;
+              const id = randomUUID();
+              res.setHeader('x-request-id', id);
+              return id;
+            },
             transport: isPretty
               ? {
                   target: 'pino-pretty',
