@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AppController } from './app.controller';
-import { AppRouterFactory } from './app.router';
 import { AppService } from './app.service';
+import { TrpcModule } from './trpc.module';
 
 @Module({
   imports: [
@@ -28,9 +28,10 @@ import { AppService } from './app.service';
         };
       },
     }),
+    TrpcModule,
   ],
   controllers: [AppController],
-  providers: [AppRouterFactory, AppService],
-  exports: [AppRouterFactory],
+  providers: [AppService],
+  exports: [],
 })
 export class AppModule {}
