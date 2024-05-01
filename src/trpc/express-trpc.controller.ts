@@ -6,8 +6,8 @@ import { CreateContext, ContextFactory } from './context.factory';
 import { TrpcRouter, TrpcRouterFactory } from './trpc.router';
 
 @Controller('api/trpc')
-export class TrpcController {
-  private readonly logger: Logger = new Logger(TrpcController.name);
+export class ExpressTrpcController {
+  private readonly logger: Logger = new Logger(ExpressTrpcController.name);
 
   private readonly createContext: CreateContext;
 
@@ -24,7 +24,7 @@ export class TrpcController {
 
   @Get(':path')
   async get(@Req() req: Request, @Res() res: Response, @Param() params: any) {
-    this.logger.log('in TrpcController::get() method');
+    this.logger.log('in ExpressTrpcController::get() method');
     await this.requestHandler.handle({
       router: this.router,
       createContext: this.createContext,
@@ -36,7 +36,7 @@ export class TrpcController {
 
   @Post(':path')
   async post(@Req() req: Request, @Res() res: Response, @Param() params: any) {
-    this.logger.log('in TrpcController::post() method');
+    this.logger.log('in ExpressTrpcController::post() method');
     await this.requestHandler.handle({
       router: this.router,
       createContext: this.createContext,

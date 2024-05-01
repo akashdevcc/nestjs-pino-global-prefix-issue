@@ -11,4 +11,5 @@ export const getTrpcProviders = () => [
 ];
 
 export * from './trpc';
-export { TrpcController } from './trpc.controller';
+export { ExpressTrpcController } from './express-trpc.controller';
+export { FastifyTrpcController } from './fastify-trpc.controller';
