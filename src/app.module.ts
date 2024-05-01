@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 
-import { AppController } from './app.controller';
+import { RestController } from './rest.controller';
+import { TrpcController } from './trpc.controller';
 import { AppRouterFactory } from './app.router';
 import { AppService } from './app.service';
 
@@ -29,8 +30,8 @@ import { AppService } from './app.service';
       },
     }),
   ],
-  controllers: [AppController],
+  controllers: [RestController, TrpcController],
   providers: [AppRouterFactory, AppService],
-  exports: [AppRouterFactory],
+  exports: [],
 })
 export class AppModule {}
