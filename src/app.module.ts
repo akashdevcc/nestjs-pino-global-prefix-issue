@@ -1,37 +1,28 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 
-import { RestController } from './rest.controller';
-import { TrpcController } from './trpc.controller';
-import { AppRouterFactory } from './app.router';
-import { AppService } from './app.service';
+import { TrpcController, getTrpcProviders } from './trpc';
+import { GreetingModule } from './greeting';
+import { PostModule } from './post';
 
 @Module({
   imports: [
-    LoggerModule.forRootAsync({
-      imports: [],
-      inject: [],
-      useFactory: async () => {
-        const level = 'trace';
-        const isPretty = true;
-        return {
-          pinoHttp: {
-            level: level,
-            transport: isPretty
-              ? {
-                  target: 'pino-pretty',
-                  options: {
-                    singleLine: true,
-                  },
-                }
-              : undefined,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: 'trace',
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            singleLine: true,
           },
-        };
+        },
       },
     }),
+    GreetingModule,
+    PostModule,
   ],
-  controllers: [RestController, TrpcController],
-  providers: [AppRouterFactory, AppService],
+  controllers: [TrpcController],
+  providers: [...getTrpcProviders()],
   exports: [],
 })
 export class AppModule {}
