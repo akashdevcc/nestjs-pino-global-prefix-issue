@@ -15,8 +15,8 @@ dependencies:
     specifier: ^10.0.0
     version: 10.3.8(@nestjs/common@10.3.8)(@nestjs/core@10.3.8)
   '@trpc/server':
-    specifier: ^10.45.2
-    version: 10.45.2
+    specifier: 11.0.0-rc.364
+    version: 11.0.0-rc.364
   express:
     specifier: 4.19.2
     version: 4.19.2
@@ -1074,8 +1074,8 @@ packages:
       '@sinonjs/commons': 3.0.1
     dev: true
 
-  /@trpc/server@10.45.2:
-    resolution: {integrity: sha512-wOrSThNNE4HUnuhJG6PfDRp4L2009KDVxsd+2VYH8ro6o/7/jwYZ8Uu5j+VaW+mOmc8EHerHzGcdbGNQSAUPgg==}
+  /@trpc/server@11.0.0-rc.364:
+    resolution: {integrity: sha512-sGlrb2jSCiU74TrJ+N+WxIcJIUDyo0WOy0y30vIArw6oHFXjeithgxjvIu+PbN+VWt/Gt4ee8kVhnmxCW4X/Qw==}
     dev: false
 
   /@tsconfig/node10@1.0.11:
