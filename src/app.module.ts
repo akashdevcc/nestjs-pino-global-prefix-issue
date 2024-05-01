@@ -2,7 +2,14 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 
 // FIXME: Order of import affects NestJS DI. Make sure to keep `trpc` imports before other internal imports.
-import { ExpressTrpcController, getTrpcProviders } from './trpc';
+
+// Comment if using fastify
+import { ExpressTrpcController } from './trpc';
+
+// Comment if using express
+// import { FastifyTrpcController } from './trpc';
+
+import { getTrpcProviders } from './trpc';
 
 import { GreetingModule } from './greeting';
 import { PostModule } from './post';
@@ -23,7 +30,10 @@ import { PostModule } from './post';
     GreetingModule,
     PostModule,
   ],
+  // Comment if using fastify
   controllers: [ExpressTrpcController],
+  // Comment if using express
+  // controllers: [FastifyTrpcController],
   providers: [...getTrpcProviders()],
   exports: [],
 })
