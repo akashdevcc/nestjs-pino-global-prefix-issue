@@ -4,8 +4,9 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { FastifyRequestHandler } from './fastify-request.handler';
 import { CreateContext, ContextFactory } from './context.factory';
 import { TrpcRouter, TrpcRouterFactory } from './trpc.router';
+import { TRPC_ENDPOINT } from '../constants';
 
-@Controller('api/trpc')
+@Controller(TRPC_ENDPOINT)
 export class FastifyTrpcController {
   private readonly logger: Logger = new Logger(FastifyTrpcController.name);
 

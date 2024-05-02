@@ -10,7 +10,7 @@ This approach has been merged to [main](https://github.com/akashdevcc/nestjs-pin
 In this approach, instead of using the official tRPC adaptors for express and fastify, we used NestJS Controllers in "[Library-specific approach](https://docs.nestjs.com/controllers#library-specific-approach)" and called the same "tRPC request handlers" which the official tRPC adaptors call underneath. With this approach, other NestJS functionalities (i.e. Guards, Pipes etc.) and existing modules (i.e. nestjs-pino) can still be used with tRPC, which was not possible with other two approaches.
 
 #### Things left to do/explore:
-1. tRPC Playground
+1. tRPC Playground (Able to run the queries/mutations but the docs and auto-complete does not seem to work!)
 2. tRPC Protected Procedures using NestJS Guards
 3. tRPC Subscriptions
 

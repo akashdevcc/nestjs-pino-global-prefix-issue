@@ -4,8 +4,9 @@ import { Response, Request } from 'express';
 import { ExpressRequestHandler } from './express-request.handler';
 import { CreateContext, ContextFactory } from './context.factory';
 import { TrpcRouter, TrpcRouterFactory } from './trpc.router';
+import { TRPC_ENDPOINT } from '../constants';
 
-@Controller('api/trpc')
+@Controller(TRPC_ENDPOINT)
 export class ExpressTrpcController {
   private readonly logger: Logger = new Logger(ExpressTrpcController.name);
 

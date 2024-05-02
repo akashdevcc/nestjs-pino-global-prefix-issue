@@ -9,8 +9,7 @@ import { ExpressTrpcController } from './trpc';
 // Comment if using express
 // import { FastifyTrpcController } from './trpc';
 
-import { getTrpcProviders } from './trpc';
-
+import { TrpcRouterFactory, getTrpcProviders } from './trpc';
 import { GreetingModule } from './greeting';
 import { PostModule } from './post';
 
@@ -34,7 +33,7 @@ import { PostModule } from './post';
   controllers: [ExpressTrpcController],
   // Comment if using express
   // controllers: [FastifyTrpcController],
-  providers: [...getTrpcProviders()],
-  exports: [],
+  providers: [TrpcRouterFactory, ...getTrpcProviders()],
+  exports: [TrpcRouterFactory],
 })
 export class AppModule {}
