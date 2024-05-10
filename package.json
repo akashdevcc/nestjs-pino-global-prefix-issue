@@ -77,5 +77,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "trpc-playground@1.0.4": "patches/trpc-playground@1.0.4.patch"
+    }
   }
 }

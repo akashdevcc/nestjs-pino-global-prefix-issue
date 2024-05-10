@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  trpc-playground@1.0.4:
+    hash: twtn4swjyns6erfqdrmixsfjru
+    path: patches/trpc-playground@1.0.4.patch
+
 dependencies:
   '@nestjs/common':
     specifier: ^10.0.0
@@ -49,7 +54,7 @@ dependencies:
     version: 7.8.1
   trpc-playground:
     specifier: ^1.0.4
-    version: 1.0.4(@trpc/server@11.0.0-rc.364)(@types/node@20.12.7)(express@4.19.2)(fastify@4.26.2)(typescript@5.4.5)(zod@3.23.4)
+    version: 1.0.4(patch_hash=twtn4swjyns6erfqdrmixsfjru)(@trpc/server@11.0.0-rc.364)(@types/node@20.12.7)(express@4.19.2)(fastify@4.26.2)(typescript@5.4.5)(zod@3.23.4)
   zod:
     specifier: ^3.23.4
     version: 3.23.4
@@ -5519,7 +5524,7 @@ packages:
     hasBin: true
     dev: true
 
-  /trpc-playground@1.0.4(@trpc/server@11.0.0-rc.364)(@types/node@20.12.7)(express@4.19.2)(fastify@4.26.2)(typescript@5.4.5)(zod@3.23.4):
+  /trpc-playground@1.0.4(patch_hash=twtn4swjyns6erfqdrmixsfjru)(@trpc/server@11.0.0-rc.364)(@types/node@20.12.7)(express@4.19.2)(fastify@4.26.2)(typescript@5.4.5)(zod@3.23.4):
     resolution: {integrity: sha512-6nVf1o2LNoo1g6oTS24yajoH7xV4CFjxGAbAH7qLXqa3yo9qB5QHsWLbrm1hNt51SyCG++P0zHJaCdVfgvEVDg==}
     peerDependencies:
       '@trpc/server': ^10
@@ -5546,6 +5551,7 @@ packages:
       - terser
       - typescript
     dev: false
+    patched: true
 
   /ts-api-utils@1.3.0(typescript@5.4.5):
     resolution: {integrity: sha512-UQMIo7pb8WRomKR1/+MFVLTroIvDVtMX3K6OUir8ynLyzB8Jeriont2bTAtmNPa1ekAgN7YPDyf6V+ygrdU+eQ==}

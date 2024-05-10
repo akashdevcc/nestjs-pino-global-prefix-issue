@@ -1,0 +1,430 @@
+diff --git a/dist/chunk-YYRHFXX6.js b/dist/chunk-YYRHFXX6.js
+index 0d37a18e4270c25df91f03cb2a8e8c9655eae2c6..ed7622f90a99d80a3ac04e4a8118dfb84caf13ab 100644
+--- a/dist/chunk-YYRHFXX6.js
++++ b/dist/chunk-YYRHFXX6.js
+@@ -49,7 +49,7 @@ import { createTypeAlias, printNode, zodToTs } from "zod-to-ts";
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return z.any();
+@@ -64,10 +64,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -218,12 +218,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     lodash2.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/aws-lambda.cjs b/dist/handlers/aws-lambda.cjs
+index b524a4f6185c3f1b0bc2c253dc41263c74449108..5a9e37fb168125fc2209bbeaea3762595a327c35 100644
+--- a/dist/handlers/aws-lambda.cjs
++++ b/dist/handlers/aws-lambda.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/express.cjs b/dist/handlers/express.cjs
+index ba88040ee798a8f92e142a68f68ba5de736803c6..44f6ec7db667dff466915ec34aff937750fe09f8 100644
+--- a/dist/handlers/express.cjs
++++ b/dist/handlers/express.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/fastify.cjs b/dist/handlers/fastify.cjs
+index 84859941a14c758a7c48bb692759e2672b751bdc..5e27b35ad7dc490818c21e927cf649b47c9b110b 100644
+--- a/dist/handlers/fastify.cjs
++++ b/dist/handlers/fastify.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/fetch.cjs b/dist/handlers/fetch.cjs
+index aca0cd15065f334c98b56d70481832eeda7ab4bf..c1c090ad32c330b5044057f6361ccce45cc624e1 100644
+--- a/dist/handlers/fetch.cjs
++++ b/dist/handlers/fetch.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/h3.cjs b/dist/handlers/h3.cjs
+index 559119a6540c08d979ec6be53f5b6dcf9d0d865f..cb3bafb66720b1defd7570f27b668499e9bb22f4 100644
+--- a/dist/handlers/h3.cjs
++++ b/dist/handlers/h3.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/koa.cjs b/dist/handlers/koa.cjs
+index 4c82771d5e8edd1836c51bdc5b1abb477669a627..294888f412a0830d52f0692c345a5ad500064c1f 100644
+--- a/dist/handlers/koa.cjs
++++ b/dist/handlers/koa.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/next.cjs b/dist/handlers/next.cjs
+index 3a0c3b493a4ac718fc048dbb7fe1536cea201fc3..d897569072df4ce40e0f084baa126d95a5a3d740 100644
+--- a/dist/handlers/next.cjs
++++ b/dist/handlers/next.cjs
+@@ -50,7 +50,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -65,10 +65,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -219,12 +219,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/handlers/node.cjs b/dist/handlers/node.cjs
+index 55e2ad1b9674a64c991c1ecc43adfc9891624aa2..7840e6039852301713dbb960b7286626473a908e 100644
+--- a/dist/handlers/node.cjs
++++ b/dist/handlers/node.cjs
+@@ -48,7 +48,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -63,10 +63,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -217,12 +217,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 36266ad384665864f75b007c32a4f22abf11c112..7f49e56c482ebf8d2bb663e1e031a006a29047fb 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -80,7 +80,7 @@ var import_zod_to_ts = require("zod-to-ts");
+ var getProcedureSchemas = (procedures) => {
+   const procedureSchemas = { queries: {}, mutations: {} };
+   const procedureTypes = { queries: {}, mutations: {} };
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([procedureName, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([procedureName, procedure]) => {
+     const inputParser = getInputFromInputParsers(procedure._def.inputs);
+     if (typeof inputParser === "function") {
+       return import_zod.z.any();
+@@ -95,10 +95,10 @@ var getProcedureSchemas = (procedures) => {
+     }
+     const procedureDefaults = {
+       inputLength: defaultInputValue.length,
+-      value: `await trpc.${procedureName}.${procedure._def.query ? "query" : "mutate"}(${defaultInputValue})`
++      value: `await trpc.${procedureName}.${procedure._def.type === "query" ? "query" : "mutate"}(${defaultInputValue})`
+     };
+-    const procedureObject = procedure._def.query ? procedureSchemas.queries : procedureSchemas.mutations;
+-    const typeProcedureObject = procedure._def.query ? procedureTypes.queries : procedureTypes.mutations;
++    const procedureObject = procedure._def.type === "query" ? procedureSchemas.queries : procedureSchemas.mutations;
++    const typeProcedureObject = procedure._def.type === "query" ? procedureTypes.queries : procedureTypes.mutations;
+     procedureObject[procedureName] = { default: procedureDefaults, type: docsType };
+     typeProcedureObject[procedureName] = procedureType;
+   });
+@@ -249,12 +249,12 @@ var defaultPromise = (def) => {
+ var buildTrpcTsType = (router, procedureTypes) => {
+   const procedures = router._def.procedures;
+   const procedureObject = {};
+-  Object.entries(procedures).filter(([, { _def }]) => _def.query || _def.mutation).forEach(([name, procedure]) => {
++  Object.entries(procedures).filter(([, { _def }]) => _def.type === "query" || _def.type === "mutation").forEach(([name, procedure]) => {
+     let procedureTypeDef = "";
+     const inputType = procedureTypes.mutations[name] || procedureTypes.queries[name] || "";
+-    if (procedure._def?.query)
++    if (procedure._def?.type === 'query')
+       procedureTypeDef += `query: (${inputType}) => void,`;
+-    else if (procedure._def?.mutation)
++    else if (procedure._def?.type === 'mutation')
+       procedureTypeDef += `mutate: (${inputType}) => void,`;
+     import_lodash2.default.set(procedureObject, name, `{${procedureTypeDef}}`);
+   });
